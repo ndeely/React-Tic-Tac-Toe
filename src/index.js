@@ -21,25 +21,22 @@ class Board extends React.Component {
       );
   }
 
-  //draws a row of 3 squares
-  renderRow(i) {
-    let currentSquare = 3 * i;
-    let squares = [];
-    for (let j = 0; j < 3; j++) {
-      squares.push(this.renderSquare(currentSquare + j));
-    }
-    return (
-        <div className="board-row">
-          {squares}
-        </div>
-    );
-  }
-
   // draws the board with 3 rows of 3 squares each
   render() {
     let boardRows = [];
     for (let i = 0; i < 3; i++) {
-      boardRows.push(this.renderRow(i));
+      // build row of 3 squares
+      let startSquare = 3 * i; // 0, 3, 6...
+      let squares = [];
+      for (let j = 0; j < 3; j++) {
+        squares.push(this.renderSquare(startSquare + j));
+      }
+      // push row onto boardRows
+      boardRows.push(
+          <div className="board-row">
+            {squares}
+          </div>
+      );
     }
     return (
       <div>
@@ -101,21 +98,28 @@ class Game extends React.Component {
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
 
-    const moves = history.map((step, move) => {
-      const desc = move ?
-        "Go to move #" + move + " : " + this.playerMove(move):
-        "Go to game start";
-      return (
-        <li key={move}>
-          <button class={this.state.isActive === move ? "active" : ""} onClick = {() => this.jumpTo(move)}>{desc}</button>
-        </li>
-      );
-    });
+    const moves = history.map(
+      (step, move) => {
+        const desc = move ?
+          "Go to move #" + move + " : " + this.playerMove(move):
+          "Go to game start";
+        return (
+          <li key={move}>
+            <button
+                class={this.state.isActive === move ? "active" : ""}
+                onClick = {() => this.jumpTo(move)}
+            >
+              {desc}
+            </button>
+          </li>
+        );
+      }
+    );
 
     let status;
     if (winner) {
       status = "Winner: " + winner;
-    } else if (this.state.history.length === 10) {
+    } else if (history.length === 10) {
       status = "The game ends in a draw";
     } else {
       status = "Next Player: " + (this.state.xIsNext ? "X" : "O");

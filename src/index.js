@@ -2,19 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-/*class Square extends React.Component {
-  render() {
-    return (
-      <button 
-          className="square"
-          onClick={() => this.props.onClick()}
-      >
-        {this.props.value}
-      </button>
-    );
-  }
-}*/
-
 function Square(props) {
   return (
     <button className="square" onClick={props.onClick}>
@@ -24,34 +11,39 @@ function Square(props) {
 }
   
 class Board extends React.Component {
-  
+  // draws a single square
   renderSquare(i) {
-    return (<Square
-              value={this.props.squares[i]}
-              onClick={() => this.props.onClick(i)}
-          />
+    return (
+        <Square
+            value={this.props.squares[i]}
+            onClick={() => this.props.onClick(i)}
+        />
       );
   }
 
+  //draws a row of 3 squares
+  renderRow(i) {
+    let currentSquare = 3 * i;
+    let squares = [];
+    for (let j = 0; j < 3; j++) {
+      squares.push(this.renderSquare(currentSquare + j));
+    }
+    return (
+        <div className="board-row">
+          {squares}
+        </div>
+    );
+  }
+
+  // draws the board with 3 rows of 3 squares each
   render() {
+    let boardRows = [];
+    for (let i = 0; i < 3; i++) {
+      boardRows.push(this.renderRow(i));
+    }
     return (
       <div>
-        
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
+        {boardRows}
       </div>
     );
   }
@@ -66,11 +58,11 @@ class Game extends React.Component {
         squares: Array(9).fill(null),
         xIsNext: true,
         col: 0,
-        row: 0,
+        row: 0
       }],
       stepNumber: 0,
       xIsNext: true,
-      isActive: -1,
+      isActive: -1
     };
   }
 
@@ -91,7 +83,7 @@ class Game extends React.Component {
       }]),
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
-      isActive: -1,
+      isActive: -1
     });
   }
 
@@ -99,7 +91,7 @@ class Game extends React.Component {
     this.setState({
       stepNumber: step,
       xIsNext: (step%2) === 0,
-      isActive: step,
+      isActive: step
     });
     
   }
@@ -151,6 +143,7 @@ class Game extends React.Component {
   }
 }
 
+// returns the winner (X or O) if there is one, null otherwise
 function calculateWinner(squares) {
   const lines = [
     [0, 1, 2],
@@ -164,6 +157,7 @@ function calculateWinner(squares) {
   ];
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
+    // the first square is occupied by something (X or O), and the second and third in the line contain the same value
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
       return squares[a];
     }
